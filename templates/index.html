@@ -39,8 +39,11 @@
 <body>
 
     <div class="container">
-        <h1>Welcome to On The Cloud's Projects!</h1>
-        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"><button>Link to my channel</button></a>
+        <h1>Welcome to the hyperwebster!</h1>
+        <p>
+            This site is for getting data and also to try and sort through the <br/>
+            absolute gibberish of a hyperwebster's contents
+        </p>
     </div>
 
     <div class="container">
@@ -48,27 +51,7 @@
     </div>
 
     <script>
-        const proxyApiUrl = "/api/get-subs";
-
-        function getLiveCount() {
-            fetch(proxyApiUrl)
-                .then(res => res.json())
-                .then(responsePacket => {
-                    // FIX: Explicit mapping to ensure response object matches your Flask string payload
-                    if (responsePacket && responsePacket.subscribers) {
-                        document.getElementById('subCount').innerText = responsePacket.subscribers;
-                    } else {
-                        document.getElementById('subCount').innerText = "7"; // Secure baseline catch
-                    }
-                })
-                .catch(err => {
-                    console.error("Could not reach Flask Scraper API", err);
-                    document.getElementById('subCount').innerText = "7"; // Soft fallback to avoid crashing to Offline
-                });
-        }
-
-        // Trigger the scraper immediately when the user lands on the page
-        window.onload = getLiveCount;
+        
     </script>
 </body>
 </html>
