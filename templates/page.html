@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperwebster Page Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 650px;
+            margin: 30px auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f4f4f9;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            text-decoration: none;
+            color: #0070f3;
+            font-weight: bold;
+        }
+        .results-box {
+            max-height: 450px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: left;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .pagination-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .btn-nav {
+            background-color: #eaeaea;
+            color: #333;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .btn-nav:hover {
+            background-color: #dcdcdc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="nav-header">
+            <a href="/" class="back-link">← Main Search</a>
+            <h2>Viewing 50 Rows</h2>
+            <div style="width: 80px;"></div> <!-- Spacer -->
+        </div>
+
+        <div class="results-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Index Coordinate</th>
+                        <th>Sequence</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="2" style="text-align:center;">Loading index data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-controls">
+            <a id="prevBtn" href="#" class="btn-nav">← Previous 50</a>
+            <a id="nextBtn" href="#" class="btn-nav">Next 50 →</a>
+        </div>
+    </div>
+
+    <script>
+        async function loadPageData() {
+            // Read parameters from the active browser URL string
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchVal = urlParams.get('search') || '';
+            const indexVal = urlParams.get('searchIndex') || '';
+
+            let apiTarget = '/api/simple-search';
+            if (searchVal) apiTarget += `?search=${encodeURIComponent(searchVal)}`;
+            else if (indexVal) apiTarget += `?searchIndex=${encodeURIComponent(indexVal)}`;
+            else return;
+
+            try {
+                const response = await fetch(apiTarget);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    document.getElementById('tableBody').innerHTML = `<tr><td colspan="2" style="color:red; text-align:center;">${data.message}</td></tr>`;
+                    return;
+                }
+
+                // Render the 50 elements into the table body rows
+                let rowsHtml = '';
+                data.words.forEach(item => {
+                    rowsHtml += `
+                        <tr>
+                            <td><code>#${item.index}</code></td>
+                            <td><strong>${item.word}</strong></td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('tableBody').innerHTML = rowsHtml;
+
+                // Configure pagination button navigation states
+                const currentStart = parseInt(data.start_index);
+                const prevStart = Math.max(1, currentStart - 50);
+                const nextStart = currentStart + 50;
+
+                document.getElementById('prevBtn').href = `/view?searchIndex=${prevStart}`;
+                document.getElementById('nextBtn').href = `/view?searchIndex=${nextStart}`;
+
+                // Disable the back button logic if we are on the absolute first entry row
+                if (currentStart <= 1) {
+                    document.getElementById('prevBtn').style.pointerEvents = 'none';
+                    document.getElementById('prevBtn').style.opacity = '0.5';
+                }
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="2" style="color:orange; text-align:center;">Error communicating with Flask backend.</td></tr>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadPageData);
+    </script>
+</body>
+</html>

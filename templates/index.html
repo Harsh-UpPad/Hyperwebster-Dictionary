@@ -8,50 +8,62 @@
         body {
             font-family: Arial, sans-serif;
             max-width: 600px;
-            margin: 50px auto;
+            margin: 100px auto;
             padding: 20px;
             text-align: center;
             background-color: #f4f4f9;
         }
         .container {
             background: white;
-            padding: 30px;
+            padding: 40px 30px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 10px;
-            margin-bottom: 20px; /* Kept spacing so your boxes don't touch */
         }
         button {
             background-color: #0070f3;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.2s;
+            margin-top: 15px;
+            width: 100%;
         }
         button:hover {
             background-color: #0051cb;
+        }
+        input {
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .divider {
+            margin: 15px 0;
+            font-weight: bold;
+            color: #666;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Welcome to the hyperwebster!</h1>
-        <p>
-            This site is for getting data and also to try and sort through the <br/>
-            absolute gibberish of a hyperwebster's contents
-        </p>
-    </div>
-
-    <div class="container">
-        <span>Sub count: <span id="subCount">Loading...</span></span>
-    </div>
-
-    <script>
+        <h1>Welcome to the Hyperwebster!</h1>
+        <p>Explore the endless boundaries of every printable sequence in Base-94.</p>
         
-    </script>
+        <!-- Standard HTML submission that navigates the browser directly to the layout page -->
+        <form action="/view" method="get">
+            <input name="search" type="text" placeholder="Search a word or phrase...">
+            <div class="divider">or</div>
+            <input name="searchIndex" type="number" placeholder="Jump directly to Index #">
+            <button type="submit">Open Hyperwebster Page</button>
+        </form>
+    </div>
+
 </body>
 </html>
