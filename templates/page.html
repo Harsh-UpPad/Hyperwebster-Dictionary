@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyperwebster Page Viewer</title>
+    <title>Hyperwebster Variations</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -73,44 +73,49 @@
 
     <div class="container">
         <div class="nav-header">
-            <a href="/" class="back-link">← Main Search</a>
-            <h2>Viewing 50 Rows</h2>
-            <div style="width: 80px;"></div> <!-- Spacer -->
+            <a href="/" class="back-link">← New Search</a>
+            <h2 id="viewingTitle">Variations Matrix</h2>
+            <div style="width: 80px;"></div>
         </div>
 
         <div class="results-box">
             <table>
                 <thead>
                     <tr>
-                        <th>Index Coordinate</th>
-                        <th>Sequence</th>
+                        <th>Offset Layer</th>
+                        <th>Hyperwebster Result Variation</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
                     <tr>
-                        <td colspan="2" style="text-align:center;">Loading index data...</td>
+                        <td colspan="2" style="text-align:center;">Analyzing variations data...</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
         <div class="pagination-controls">
-            <a id="prevBtn" href="#" class="btn-nav">← Previous 50</a>
-            <a id="nextBtn" href="#" class="btn-nav">Next 50 →</a>
+            <a id="prevBtn" href="#" class="btn-nav">← Previous Variations</a>
+            <a id="nextBtn" href="#" class="btn-nav">Next Variations →</a>
         </div>
     </div>
 
     <script>
         async function loadPageData() {
-            // Read parameters from the active browser URL string
             const urlParams = new URLSearchParams(window.location.search);
             const searchVal = urlParams.get('search') || '';
             const indexVal = urlParams.get('searchIndex') || '';
+            const prefixVal = urlParams.get('prefix') || '';
 
+            // Construct precise variation endpoints
             let apiTarget = '/api/simple-search';
-            if (searchVal) apiTarget += `?search=${encodeURIComponent(searchVal)}`;
-            else if (indexVal) apiTarget += `?searchIndex=${encodeURIComponent(indexVal)}`;
-            else return;
+            if (searchVal) {
+                apiTarget += `?search=${encodeURIComponent(searchVal)}`;
+            } else if (indexVal) {
+                apiTarget += `?searchIndex=${encodeURIComponent(indexVal)}&prefix=${encodeURIComponent(prefixVal)}`;
+            } else {
+                return;
+            }
 
             try {
                 const response = await fetch(apiTarget);
@@ -121,35 +126,35 @@
                     return;
                 }
 
-                // Render the 50 elements into the table body rows
+                document.getElementById('viewingTitle').textContent = `"${data.prefix}" Branch Matrix`;
+
                 let rowsHtml = '';
                 data.words.forEach(item => {
                     rowsHtml += `
                         <tr>
-                            <td><code>#${item.index}</code></td>
+                            <td><code>+${item.offset}</code></td>
                             <td><strong>${item.word}</strong></td>
                         </tr>
                     `;
                 });
                 document.getElementById('tableBody').innerHTML = rowsHtml;
 
-                // Configure pagination button navigation states
-                const currentStart = parseInt(data.start_index);
-                const prevStart = Math.max(1, currentStart - 50);
-                const nextStart = currentStart + 50;
+                const currentOffset = parseInt(data.current_offset);
+                const prevOffset = Math.max(0, currentOffset - 50);
+                const nextOffset = currentOffset + 50;
 
-                document.getElementById('prevBtn').href = `/view?searchIndex=${prevStart}`;
-                document.getElementById('nextBtn').href = `/view?searchIndex=${nextStart}`;
+                // Lock operational states using state context parameters
+                document.getElementById('prevBtn').href = `/view?searchIndex=${prevOffset}&prefix=${encodeURIComponent(data.prefix)}`;
+                document.getElementById('nextBtn').href = `/view?searchIndex=${nextOffset}&prefix=${encodeURIComponent(data.prefix)}`;
 
-                // Disable the back button logic if we are on the absolute first entry row
-                if (currentStart <= 1) {
+                if (currentOffset <= 0) {
                     document.getElementById('prevBtn').style.pointerEvents = 'none';
                     document.getElementById('prevBtn').style.opacity = '0.5';
                 }
 
             } catch (error) {
                 console.error(error);
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="2" style="color:orange; text-align:center;">Error communicating with Flask backend.</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="2" style="color:orange; text-align:center;">Error matching system variants.</td></tr>`;
             }
         }
 
