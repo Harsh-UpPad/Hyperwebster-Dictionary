@@ -34,7 +34,7 @@
         button:hover {
             background-color: #0051cb;
         }
-        input {
+        input, select {
             padding: 10px;
             margin: 8px 0;
             border: 1px solid #ccc;
@@ -42,11 +42,6 @@
             width: 100%;
             box-sizing: border-box;
             font-size: 16px;
-        }
-        .divider {
-            margin: 15px 0;
-            font-weight: bold;
-            color: #666;
         }
     </style>
 </head>
@@ -56,11 +51,16 @@
         <h1>Welcome to the Hyperwebster!</h1>
         <p>Explore the endless boundaries of every printable sequence in Base-94.</p>
         
-        <!-- Standard HTML submission that navigates the browser directly to the layout page -->
         <form action="/view" method="get">
-            <input name="search" type="text" placeholder="Search a word or phrase...">
-            <div class="divider">or</div>
-            <input name="searchIndex" type="number" placeholder="Jump directly to Index #">
+            <label for="searchMode" style="display:block; text-align:left; font-size:14px; font-weight:bold; margin-bottom:2px;">Search Mode:</label>
+            <select id="searchMode" name="mode">
+                <option value="str">Plain Text (Base-94 Word String)</option>
+                <option value="idx">Standard Number Index (Base-10)</option>
+                <option value="hex">Hexadecimal Index (Base-16)</option>
+                <option value="b36">Alphanumeric Index (Base-36)</option>
+            </select>
+            
+            <input name="search" type="text" placeholder="Enter search value..." required>
             <button type="submit">Open Hyperwebster Page</button>
         </form>
     </div>
